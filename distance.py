@@ -32,7 +32,7 @@ def make_borders(cdata):
     return coordinates
 
 
-def main(target_country, target_distance):
+def distances(target_country, target_distance):
     fo = open("country_data.json")
     data = json.load(fo)
     fo.close()
@@ -40,7 +40,7 @@ def main(target_country, target_distance):
     target_cdata = None
 
     for cdata in data["features"]:
-        if cdata["properties"]["NAME_EN"].lower() == target_country:
+        if cdata["properties"]["NAME"].lower() == target_country.lower() or cdata["properties"]["ABBREV"].lower() == target_country.lower():
             target_cdata = cdata
             break
 
@@ -53,9 +53,9 @@ def main(target_country, target_distance):
     results = {}
 
     for cdata in data["features"]:
-        country_name = cdata["properties"]["NAME_EN"]
+        country_name = cdata["properties"]["ABBREV"]
         if country_name == target_country: continue
-        geometry_type = cdata["geometry"]["type"]
+        # geometry_type = cdata["geometry"]["type"]
 
         borders = make_borders(cdata)
 
@@ -73,8 +73,7 @@ def main(target_country, target_distance):
 
     results.update((x, abs(y - target_distance)) for x, y in results.items())
     results = sorted(results.items(), key=lambda x: x[1])
-    for cname, d in results[:20]:
-        print(f"{d:5.1f} {cname}")
+    return results
 
 
 if __name__ == "__main__":
@@ -85,4 +84,7 @@ if __name__ == "__main__":
     target_country = argv[1].lower()
     target_distance = float(argv[2])
 
-    main(target_country, target_distance)
+    results = distances(target_country, target_distance)
+
+    for cname, d in results[:20]:
+        print(f"{d:5.1f} {cname}")
