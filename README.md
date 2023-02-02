@@ -14,7 +14,7 @@ Please don't mind the dirty code. That was more a proof of concept than anything
 
 ### Usage : 
 
-Give in first argument the tested country name, and in second parameter it's distance to the target country.
+Give the name of the country being tested as the first argument, and its distance from the target country as the second. The smaller the distance, the more likely it is to be the target country.
 
 Example usage :
 ```bash
