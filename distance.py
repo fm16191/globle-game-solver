@@ -4,6 +4,7 @@ import json
 import numpy as np
 from sys import argv
 from math import sin, cos, sqrt, atan2, radians
+import os
 
 
 def distance(lat1, lon1, lat2, lon2):
@@ -53,7 +54,8 @@ def distances(target_country, target_distance):
     results = {}
 
     for cdata in data["features"]:
-        country_name = cdata["properties"]["ABBREV"]
+        country_name = cdata["properties"]["NAME"]
+        # country_name = cdata["properties"]["ABBREV"]
         if country_name == target_country: continue
         # geometry_type = cdata["geometry"]["type"]
 
@@ -76,6 +78,12 @@ def distances(target_country, target_distance):
     return results
 
 
+def couleur(d, d_max):
+    color = int(d / d_max * 255)
+    cmd = """perl -e 'foreach $a(@ARGV){print "\e[48:2::".join(":",unpack("C*",pack("H*",$a)))."m \e[49m "}'"""
+    return os.popen(f"{cmd} {255:02x}{color:02x}{color:02x}").read()
+
+
 if __name__ == "__main__":
     if len(argv) < 3:
         print(f"Usage : {argv[0]} <Country Name> <distance to closest border in KM>")
@@ -86,5 +94,7 @@ if __name__ == "__main__":
 
     results = distances(target_country, target_distance)
 
-    for cname, d in results[:20]:
-        print(f"{d:5.1f} {cname}")
+    # for cname, d in results[::-1][-20:]:
+    d_max = results[-1][1]
+    for cname, d in results[:-20 if target_distance != 0 else -1]:
+        print(f"{couleur(d, d_max)}{d:5.1f} {cname}")
